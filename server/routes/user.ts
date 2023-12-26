@@ -1,22 +1,22 @@
 import express from 'express'
 import user from '../models/user'
 import { generateToken } from '../services/auth'
+import { verifyJwt } from '../middlewares/veriftJwt'
 
 const userRouter= express.Router()
 
 userRouter.post('/' , async (req, res)=> {
     try{
-        const {fullName, email, password} = req.body
+        const {fullName, email, password, role} = req.body
+        const isUserExists = await user.findOne({fullName, email})
+        if(isUserExists){ 
+            return res.json('User already exists!')
+        }
         const data= await user.create({
-            fullName , email, password
+            fullName , email, password, role
         })
         data.save()
-        console.log(data);
-        
-         const token = generateToken(data._id,email,data.role)
-         res.cookie('token',token ,{ maxAge: 900000, httpOnly: true })
-         res.send('Cookie has been sent!')
-
+        res.send('User created successfully!')
     }catch(err){
         res.status(403).json(err)
     }
@@ -25,13 +25,29 @@ userRouter.post('/' , async (req, res)=> {
 userRouter.post('/signin', async (req, res)=> {
     try{
         const {fullName, email, password} = req.body
+        const isValidUser = await user.findOne({fullName, email})
+        console.log(isValidUser);
         
+        if(!isValidUser){
+            return res.status(403).json('Such user does not exists!')
+        }
+        const token = await user.matchPasswordAndGiveToken(isValidUser._id, email ,isValidUser.role, password)
+        
+         res.cookie('token',token ,{ maxAge: 900000, httpOnly: true })
+         res.send('Cookie has been sent!')
 
     }catch(err){
         res.status(403).json(err)
     }
 })
 
-
+userRouter.get('/k', verifyJwt, async(req,res)=> {
+    const id= req.headers['userId']
+    const rolee= req.headers['role']
+    const obj={
+        id, rolee
+    }
+    res.send(obj)
+} )
 
 export default userRouter
