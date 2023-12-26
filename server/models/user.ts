@@ -46,11 +46,11 @@ userSchema.pre<IUser>('save', function (next){
     if(!user.isModified("password")) {return}
     const secret= randomBytes(17).toString()
     const hashedPassword = createHmac('sha256', secret).update(user.password).digest('hex');
-    console.log(hashedPassword);
     this.salt = secret
     this.password = hashedPassword
     next()
 })
+
 
 const user= mongoose.model<IUser,UserModel>('user', userSchema)
 
