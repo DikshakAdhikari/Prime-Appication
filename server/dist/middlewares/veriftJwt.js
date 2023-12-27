@@ -39,66 +39,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = __importDefault(require("mongoose"));
-var crypto_1 = require("crypto");
-var auth_1 = require("../services/auth");
-var userSchema = new mongoose_1.default.Schema({
-    fullName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    role: {
-        type: String,
-        enum: ['NORMAL', 'ADMIN'],
-        default: 'NORMAL'
-    },
-    salt: {
-        type: String,
-    },
-}, { timestamps: true });
-userSchema.pre('save', function (next) {
-    var user = this;
-    if (!user.isModified("password")) {
-        return;
-    }
-    var secret = (0, crypto_1.randomBytes)(17).toString();
-    var hashedPassword = (0, crypto_1.createHmac)('sha256', secret).update(user.password).digest('hex');
-    this.salt = secret;
-    this.password = hashedPassword;
-    next();
-});
-userSchema.static('matchPasswordAndGiveToken', function (userId, email, role, password) {
-    return __awaiter(this, void 0, void 0, function () {
-        var user, secret, hashedPassword, hashingPassword, token;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, this.findOne({ email: email })];
-                case 1:
-                    user = _a.sent();
-                    if (!user) {
-                        throw new Error('User not found');
-                    }
-                    secret = user.salt;
-                    hashedPassword = user.password;
-                    hashingPassword = (0, crypto_1.createHmac)('sha256', secret).update(password).digest('hex');
-                    if (hashedPassword !== hashingPassword) {
-                        return [2 /*return*/, null];
-                    }
-                    token = (0, auth_1.generateToken)(userId, email, role);
-                    return [2 /*return*/, token];
+exports.verifyJwt = void 0;
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var verifyJwt = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
+    return __generator(this, function (_a) {
+        try {
+            token = req.cookies['token'];
+            if (!token) {
+                return [2 /*return*/, res.send('Cookie expired / no cookie')];
             }
-        });
+            console.log(token);
+            if (!process.env.SECRET_KEY) {
+                return [2 /*return*/, res.sendStatus(403)];
+            }
+            jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY, function (err, payload) {
+                if (err) {
+                    return res.status(400).json(err);
+                }
+                if (!payload) {
+                    return res.sendStatus(403);
+                }
+                if (typeof payload === "string") {
+                    return res.sendStatus(403);
+                }
+                req.headers["userId"] = payload.id;
+                req.headers["role"] = payload.role;
+                next();
+            });
+        }
+        catch (err) {
+            res.status(403).json(err);
+        }
+        return [2 /*return*/];
     });
-});
-var user = mongoose_1.default.model('user', userSchema);
-exports.default = user;
+}); };
+exports.verifyJwt = verifyJwt;

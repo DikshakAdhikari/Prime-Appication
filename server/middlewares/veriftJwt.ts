@@ -4,6 +4,7 @@ import jwt, { VerifyErrors } from 'jsonwebtoken'
 export const verifyJwt= async(req:Request ,res:Response, next:NextFunction)=> {
     try{
         const token = req.cookies['token']
+        
         if(!token){
             return res.send('Cookie expired / no cookie')
         }

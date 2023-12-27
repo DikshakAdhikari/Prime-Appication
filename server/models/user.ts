@@ -68,8 +68,6 @@ userSchema.static('matchPasswordAndGiveToken', async function(userId , email, ro
     }
 
     const token = generateToken(userId,email,role)
-    console.log(token);
-
     return token
 
 })

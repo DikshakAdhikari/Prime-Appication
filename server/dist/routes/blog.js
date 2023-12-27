@@ -39,66 +39,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = __importDefault(require("mongoose"));
-var crypto_1 = require("crypto");
-var auth_1 = require("../services/auth");
-var userSchema = new mongoose_1.default.Schema({
-    fullName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    role: {
-        type: String,
-        enum: ['NORMAL', 'ADMIN'],
-        default: 'NORMAL'
-    },
-    salt: {
-        type: String,
-    },
-}, { timestamps: true });
-userSchema.pre('save', function (next) {
-    var user = this;
-    if (!user.isModified("password")) {
-        return;
-    }
-    var secret = (0, crypto_1.randomBytes)(17).toString();
-    var hashedPassword = (0, crypto_1.createHmac)('sha256', secret).update(user.password).digest('hex');
-    this.salt = secret;
-    this.password = hashedPassword;
-    next();
-});
-userSchema.static('matchPasswordAndGiveToken', function (userId, email, role, password) {
-    return __awaiter(this, void 0, void 0, function () {
-        var user, secret, hashedPassword, hashingPassword, token;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, this.findOne({ email: email })];
-                case 1:
-                    user = _a.sent();
-                    if (!user) {
-                        throw new Error('User not found');
-                    }
-                    secret = user.salt;
-                    hashedPassword = user.password;
-                    hashingPassword = (0, crypto_1.createHmac)('sha256', secret).update(password).digest('hex');
-                    if (hashedPassword !== hashingPassword) {
-                        return [2 /*return*/, null];
-                    }
-                    token = (0, auth_1.generateToken)(userId, email, role);
-                    return [2 /*return*/, token];
-            }
-        });
+var express_1 = __importDefault(require("express"));
+var veriftJwt_1 = require("../middlewares/veriftJwt");
+var blogRouter = express_1.default.Router();
+blogRouter.post('/', veriftJwt_1.verifyJwt, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        try {
+            console.log('dsfsdfsdfdsfsdfds');
+        }
+        catch (err) {
+            res.json(err);
+        }
+        return [2 /*return*/];
     });
-});
-var user = mongoose_1.default.model('user', userSchema);
-exports.default = user;
+}); });
+exports.default = blogRouter;

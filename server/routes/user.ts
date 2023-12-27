@@ -24,18 +24,16 @@ userRouter.post('/' , async (req, res)=> {
 
 userRouter.post('/signin', async (req, res)=> {
     try{
-        const {fullName, email, password} = req.body
-        const isValidUser = await user.findOne({fullName, email})
-        console.log(isValidUser);
-        
+        const {email, password} = req.body
+        const isValidUser = await user.findOne({email})
         if(!isValidUser){
             return res.status(403).json('Such user does not exists!')
         }
         const token = await user.matchPasswordAndGiveToken(isValidUser._id, email ,isValidUser.role, password)
+        //console.log(token);
         
-         res.cookie('token',token ,{ maxAge: 900000, httpOnly: true })
-         res.send('Cookie has been sent!')
-
+        res.cookie('token', token, { secure: true, httpOnly: true, path: '/' });
+         res.json('Cookie has been sent!')
     }catch(err){
         res.status(403).json(err)
     }
@@ -44,8 +42,10 @@ userRouter.post('/signin', async (req, res)=> {
 userRouter.get('/k', verifyJwt, async(req,res)=> {
     const id= req.headers['userId']
     const rolee= req.headers['role']
+    const token = req.cookies['token']
+        console.log(token);
     const obj={
-        id, rolee
+        id, rolee, token
     }
     res.send(obj)
 } )
