@@ -40,7 +40,7 @@ export default function Home() {
     e.preventDefault()
     const formData= new FormData()
     if(file){
-      formData.append('image', file)
+      formData.append('file', file)
     }
     formData.append('title', title)
     formData.append('description', description)
@@ -49,9 +49,7 @@ export default function Home() {
       const res= await fetch('http://localhost:3001/blog/', {
         method:"POST",
         credentials: "include",
-        headers:{
-          'Content-Type': 'multipart/form-data',
-        },
+
         body:formData
       })
     }catch(err){
@@ -70,13 +68,18 @@ export default function Home() {
       </form>
 
 
-    <form onSubmit={handleSubmit} className="  pt-20  items-center justify-center flex flex-col gap-4" action="">
+    <form   onSubmit={handleSubmit} className="  pt-20  items-center justify-center flex flex-col gap-4" >
     <div className=" text-[1.7rem] text-gray-800">Form</div>
       <input type="file" required onChange={handleFileChange} className="  w-[40vw]  p-3"  />
        <input type="text" required onChange={(e)=> settitle(e.target.value)} placeholder="title" className=" w-[40vw] border-[1px] border-gray-500 p-3"  />
         <input required placeholder=" description" onChange={(e)=> setDescription(e.target.value)} className=" p-3 w-[40vw]" ></input>
        <button className=" w-[10vw] bg-blue-500 p-3 rounded-lg" type="submit">Submit</button>
     </form>
+    <div>
+    <div>
+      <img src="public/uploads/1703784861038.csxmprfh.webp" alt="" />
+    </div>
+    </div>
     </div>
       )
 }

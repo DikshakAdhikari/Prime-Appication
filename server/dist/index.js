@@ -12,12 +12,11 @@ var blog_1 = __importDefault(require("./routes/blog"));
 var cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 (0, connect_1.default)();
-var allowedOrigins = ['http://localhost:3000'];
-var options = {
-    origin: allowedOrigins
-};
 var app = (0, express_1.default)();
-app.use((0, cors_1.default)(options));
+app.use((0, cors_1.default)({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use('/user', user_1.default);

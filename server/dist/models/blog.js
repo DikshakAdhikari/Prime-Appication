@@ -43,5 +43,5 @@ var blogSchema = new mongoose_1.default.Schema({
         required: true
     }
 }, { timestamps: true });
-var blog = mongoose_1.default.model('blogging', blogSchema);
+var blog = mongoose_1.default.model('blog', blogSchema);
 exports.default = blog;

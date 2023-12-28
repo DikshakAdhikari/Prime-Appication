@@ -85,14 +85,13 @@ userRouter.post('/signin', function (req, res) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, user_1.default.findOne({ email: email })];
             case 1:
                 isValidUser = _b.sent();
-                console.log(isValidUser);
                 if (!isValidUser) {
                     return [2 /*return*/, res.status(403).json('Such user does not exists!')];
                 }
                 return [4 /*yield*/, user_1.default.matchPasswordAndGiveToken(isValidUser._id, email, isValidUser.role, password)];
             case 2:
                 token = _b.sent();
-                res.cookie('token', token, { maxAge: 900000 });
+                res.cookie('token', token, { secure: true, httpOnly: true, path: '/' });
                 res.send('Cookie has been sent!');
                 return [3 /*break*/, 4];
             case 3:
@@ -104,13 +103,16 @@ userRouter.post('/signin', function (req, res) { return __awaiter(void 0, void 0
     });
 }); });
 userRouter.get('/k', veriftJwt_1.verifyJwt, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, rolee, obj;
+    var id, rolee, token, obj;
     return __generator(this, function (_a) {
         id = req.headers['userId'];
         rolee = req.headers['role'];
+        token = req.cookies['token'];
+        console.log(token);
         obj = {
             id: id,
-            rolee: rolee
+            rolee: rolee,
+            token: token
         };
         res.send(obj);
         return [2 /*return*/];

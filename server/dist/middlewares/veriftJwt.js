@@ -49,7 +49,6 @@ var verifyJwt = function (req, res, next) { return __awaiter(void 0, void 0, voi
             if (!token) {
                 return [2 /*return*/, res.send('Cookie expired / no cookie')];
             }
-            console.log(token);
             if (!process.env.SECRET_KEY) {
                 return [2 /*return*/, res.sendStatus(403)];
             }

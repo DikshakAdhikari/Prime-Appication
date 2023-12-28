@@ -41,16 +41,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var veriftJwt_1 = require("../middlewares/veriftJwt");
+var multer_1 = __importDefault(require("multer"));
+var blog_1 = __importDefault(require("../models/blog"));
 var blogRouter = express_1.default.Router();
-blogRouter.post('/', veriftJwt_1.verifyJwt, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        try {
-            console.log('dsfsdfsdfdsfsdfds');
+var storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        //console.log(req.headers['userId']);
+        cb(null, './public/uploads');
+    },
+    filename: function (req, file, cb) {
+        // console.log(file.mimetype); // image/jpeg
+        // const ext = file.mimetype.split("/")[1]; //jpeg
+        cb(null, Date.now() + '.' + file.originalname); // .jpeg
+    }
+});
+var upload = (0, multer_1.default)({ storage: storage });
+blogRouter.post('/', veriftJwt_1.verifyJwt, upload.single('file'), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, title, description, userId, data, err_1;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 3, , 4]);
+                _a = req.body, title = _a.title, description = _a.description;
+                console.log(req.headers['userId']);
+                userId = req.headers['userId'];
+                return [4 /*yield*/, blog_1.default.create({
+                        imageUrl: (_b = req.file) === null || _b === void 0 ? void 0 : _b.path,
+                        title: title,
+                        description: description,
+                        createdBy: userId,
+                    })];
+            case 1:
+                data = _c.sent();
+                return [4 /*yield*/, data.save()];
+            case 2:
+                _c.sent();
+                res.send('new');
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _c.sent();
+                res.json(err_1);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
-        catch (err) {
-            res.json(err);
-        }
-        return [2 /*return*/];
     });
 }); });
 exports.default = blogRouter;
