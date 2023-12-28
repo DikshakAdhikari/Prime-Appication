@@ -1,11 +1,9 @@
 "use client"
 import { ChangeEvent, FormEvent, useState } from "react"
-import Cookies from 'js-cookie';
 export default function Home() {
   const [file, setFile]= useState<File|null>(null)
   const [title, settitle]= useState('')
   const [description, setDescription] = useState('')
-
   const [email, setEmail]= useState('')
   const [password, setPassword]= useState('')
 
@@ -14,17 +12,17 @@ export default function Home() {
     try{
       const res= await fetch('http://localhost:3001/user/signin',{
         method:"POST",
+        credentials:'include',
         headers:{
+          Accept: 'application/json',
           'Content-Type':'application/json'
         },
+        //credentials: 'same-origin',
         body:JSON.stringify({email,password}),
-       
       })
       if(!res.ok){
         throw new Error('Network connection error!')
       }
-      const data= Cookies.get()
-      console.log(data);
 
     }catch(err){
       console.log(err);
@@ -56,13 +54,10 @@ export default function Home() {
         },
         body:formData
       })
-
-
     }catch(err){
       console.log(err);
       
-    }
-    
+    }  
   }
   return (
     <div className=" h-[100vh] p-4">

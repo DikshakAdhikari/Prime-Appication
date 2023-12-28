@@ -29,11 +29,9 @@ userRouter.post('/signin', async (req, res)=> {
         if(!isValidUser){
             return res.status(403).json('Such user does not exists!')
         }
-        const token = await user.matchPasswordAndGiveToken(isValidUser._id, email ,isValidUser.role, password)
-        //console.log(token);
-        
+        const token = await user.matchPasswordAndGiveToken(isValidUser._id, email ,isValidUser.role, password)     
         res.cookie('token', token, { secure: true, httpOnly: true, path: '/' });
-         res.json('Cookie has been sent!')
+         res.send('Cookie has been sent!')
     }catch(err){
         res.status(403).json(err)
     }
@@ -51,3 +49,4 @@ userRouter.get('/k', verifyJwt, async(req,res)=> {
 } )
 
 export default userRouter
+
