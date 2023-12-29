@@ -7,7 +7,8 @@ export const verifyJwt= async(req:Request ,res:Response, next:NextFunction)=> {
         if(!token){
             return res.send('Cookie expired / no cookie')
         }
-
+ 
+        
         if(!process.env.SECRET_KEY){
             return res.sendStatus(403)
         }

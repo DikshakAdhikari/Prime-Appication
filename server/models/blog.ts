@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const blogSchema= new mongoose.Schema({
     imageUrl:{
         type:String,
-        required:true
+        required:false
     },
     title:{
         type:String,

@@ -1,11 +1,44 @@
 "use client"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import Cookies from "js-cookie"
+
+
 export default function Home() {
   const [file, setFile]= useState<File|null>(null)
   const [title, settitle]= useState('')
   const [description, setDescription] = useState('')
   const [email, setEmail]= useState('')
   const [password, setPassword]= useState('')
+  const [image, setImage]= useState([])
+
+ 
+ 
+  useEffect(()=> {
+    const fun = async()=> {
+      try{
+        const res= await fetch('http://localhost:3001/blog/all',{
+        method:"GET",
+        credentials:"include", //This is very important in the case when we want to send cookies with the request
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      })
+      if(!res.ok){
+        throw new Error('Network Error!')
+      }
+      console.log(Cookies.get('token'));
+      const data= await res.json()
+      console.log(data);
+      setImage(data)
+      
+      }catch(err){
+        console.log(err);
+        
+      }
+      
+    }
+    fun()
+  },[Cookies.get('token')])
 
   const handleLogin= async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
@@ -59,11 +92,19 @@ export default function Home() {
   }
   return (
     <div className=" h-[100vh] p-4">
+      
+      {image?.map((val)=> (
+        <div>
+          <img src={`http://localhost:3001/${val.imageUrl}`} alt="dsffdgfdgdfsdfsdf" />  {/* format -> http://localhost:3001/uploads/1703846233313.2023-11-20-165834.jpg*/}
+          <div>dsfsdjghjghjf</div>
+        </div>
+      ))}
+
 
       <form onSubmit={handleLogin} className=" border-[2px] flex flex-col items-center gap-5" action="">
         <div className=" text-[1.7rem] text-gray-800">Login</div>
-         <input onChange={(e)=> setEmail(e.target.value)} type="text" className=" w-[40vw] border-[1px] border-gray-500 p-3"  placeholder="Email" />
-         <input onChange={(e)=> setPassword(e.target.value)} type="text" className=" w-[40vw] border-[1px] border-gray-500 p-3"  placeholder="Password"/>
+         <input required onChange={(e)=> setEmail(e.target.value)} type="text" className=" w-[40vw] border-[1px] border-gray-500 p-3"  placeholder="Email" />
+         <input required onChange={(e)=> setPassword(e.target.value)} type="text" className=" w-[40vw] border-[1px] border-gray-500 p-3"  placeholder="Password"/>
          <button className=" w-[10vw] bg-blue-500 p-3 rounded-lg" type="submit">Login</button>
       </form>
 
@@ -77,7 +118,7 @@ export default function Home() {
     </form>
     <div>
     <div>
-      <img src="public/uploads/1703784861038.csxmprfh.webp" alt="" />
+  
     </div>
     </div>
     </div>

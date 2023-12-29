@@ -30,7 +30,7 @@ userRouter.post('/signin', async (req, res)=> {
             return res.status(403).json('Such user does not exists!')
         }
         const token = await user.matchPasswordAndGiveToken(isValidUser._id, email ,isValidUser.role, password)     
-        res.cookie('token', token, { secure: true, httpOnly: true, path: '/' });
+        res.cookie('token', token, { secure: true, httpOnly: false, path: '/' });
          res.send('Cookie has been sent!')
     }catch(err){
         res.status(403).json(err)
