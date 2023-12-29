@@ -42,7 +42,7 @@ blogRouter.post('/', verifyJwt , upload.single('file'), async(req,res)=> {
     }
 })
 
-blogRouter.get('/all', verifyJwt , async(req, res)=> {
+blogRouter.get('/all' , async(req, res)=> {
     try{
         const data= await blog.find({})
         res.json(data)
