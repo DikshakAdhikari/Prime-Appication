@@ -1,6 +1,7 @@
 "use client"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import Cookies from "js-cookie"
+import Navbar from "./(Components)/Navbar"
 
 
 export default function Home() {
@@ -9,7 +10,7 @@ export default function Home() {
   const [description, setDescription] = useState('')
   const [email, setEmail]= useState('')
   const [password, setPassword]= useState('')
-  const [image, setImage]= useState([])
+  const [image, setImage]= useState<any>([])
 
  
  
@@ -26,16 +27,13 @@ export default function Home() {
       if(!res.ok){
         throw new Error('Network Error!')
       }
-      console.log(Cookies.get('token'));
+      // console.log(Cookies.get('token'));
       const data= await res.json()
-      console.log(data);
       setImage(data)
       
       }catch(err){
-        console.log(err);
-        
-      }
-      
+        console.log(err); 
+      }   
     }
     fun()
   },[Cookies.get('token')])
@@ -91,12 +89,13 @@ export default function Home() {
     }  
   }
   return (
+    <div>
+      <Navbar />
+
     <div className=" h-[100vh] p-4">
-      
-      {image?.map((val)=> (
+      {image?.map((val:any)=> (
         <div>
           <img src={`http://localhost:3001/${val.imageUrl}`} alt="dsffdgfdgdfsdfsdf" />  {/* format -> http://localhost:3001/uploads/1703846233313.2023-11-20-165834.jpg*/}
-          <div>dsfsdjghjghjf</div>
         </div>
       ))}
 
@@ -119,6 +118,7 @@ export default function Home() {
     <div>
     <div>
   
+    </div>
     </div>
     </div>
     </div>

@@ -51,7 +51,4 @@ blogRouter.get('/all', verifyJwt , async(req, res)=> {
     }
 })
 
-
-
-
 export default blogRouter
